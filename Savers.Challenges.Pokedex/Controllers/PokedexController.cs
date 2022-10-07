@@ -11,13 +11,11 @@ namespace Savers.Challenges.Pokedex.Controllers
     public class PokedexController : ControllerBase
     {
         private readonly ILogger<PokedexController> _logger;
-        private readonly IGetPokedexEntries _getPokedexEntries;
-        private readonly IPokedexFilter _pokedexFilter;
-        public PokedexController(ILogger<PokedexController> logger, IGetPokedexEntries getPokedexEntries, IPokedexFilter pokedexFilter)
+        private readonly IHandlePokedexEntries _pokedexService;
+        public PokedexController(ILogger<PokedexController> logger, IHandlePokedexEntries pokedexService)
         {
             _logger = logger;
-            _getPokedexEntries = getPokedexEntries;
-            _pokedexFilter = pokedexFilter;
+            _pokedexService = pokedexService;
         }
 
         [HttpGet(Name = "GetPokedex")]
@@ -25,9 +23,7 @@ namespace Savers.Challenges.Pokedex.Controllers
         {
             try
             {
-                var pokedexEntries = await _getPokedexEntries.GetPokedexEntries();
-
-                _pokedexFilter.Filter(ref pokedexEntries, pokedexQuery);
+                var pokedexEntries = await _pokedexService.GetPokedexEntries(pokedexQuery);
 
                 return Ok(pokedexEntries);
             }
